@@ -68,8 +68,6 @@ func createPassports(inputs []string) []passport {
 
 	for i, line := range inputs {
 		if line == "" {
-			fmt.Println("New passport")
-			fmt.Println(passportlist)
 			passportlist = append(passportlist, Passport)
 			Passport = passport{}
 		} else {
