@@ -3,51 +3,28 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
 
-// type Passport struct {
-// 	Byr int
-// 	Iyr int
-// 	Eyr int
-// 	Hgt string
-// 	Hcl string
-// 	Ecl string
-// 	Pid int
-// 	Cid int
-// }
-
 func main() {
-	file, err := os.Open("./input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	var inputs []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		input := scanner.Text()
-		inputs = append(inputs, input)
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	passports := createPassports(inputs)
-	validPassportCount := countValidPassports(passports)
-	fmt.Printf("Valid passports: %d\n", validPassportCount)
-}
-
-func countValidPassports(passports []map[string]string) int {
-	var count int
-	for _, pp := range passports {
-		if pp["byr"] != "" && pp["iyr"] != "" && pp["eyr"] != "" && pp["hgt"] != "" && pp["hcl"] != "" && pp["ecl"] != "" && pp["pid"] != "" {
-			count++
+	passportsList, _ := readLines("input.txt")
+	lastLine := len(passportsList) - 1
+	validPassports := 0
+	passport := make(map[string]string)
+	for i, line := range passportsList {
+		if line != "" { // Not an empty line, so extract all the values and put them in "passport"
+			passport = extractValuePairs(line, passport)
+		}
+		if i == lastLine || line == "" { // We have all the fields for this passport. Validate it.
+			if checkValidPassport(passport) {
+				validPassports++
+			}
+			// fmt.Printf("Passport: %v - Valid:%t - #Valids:%d\n", passport, checkValidPassport(passport), validPassports)
+			passport = make(map[string]string)
 		}
 	}
-	return count
+	fmt.Printf("Valid passports found: %d", validPassports)
 }
 
 func extractValuePairs(line string, passport map[string]string) map[string]string {
@@ -58,16 +35,24 @@ func extractValuePairs(line string, passport map[string]string) map[string]strin
 	return passport
 }
 
-func createPassports(inputs []string) []map[string]string {
-	passportlist := make([]map[string]string, 0)
-	passport := make(map[string]string)
-	for i, line := range inputs {
-		if line != "" {
-			passport = extractValuePairs(line, passport)
-		}
-		if i+1 == len(inputs) || line == "" {
-			passportlist = append(passportlist, passport)
-		}
+// checkValidPassport checks if the passport has all the required fields
+func checkValidPassport(passport map[string]string) bool {
+	return passport["byr"] != "" && passport["pid"] != "" && passport["ecl"] != "" && passport["eyr"] != "" && passport["hcl"] != "" && passport["hgt"] != "" && passport["iyr"] != ""
+}
+
+// readLines reads a whole file into memory
+// and returns a slice of its lines.
+func readLines(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
 	}
-	return passportlist
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines, scanner.Err()
 }
