@@ -28,10 +28,9 @@ func main() {
 
 	for _, primary := range inputs {
 		for _, secondary := range inputs {
-			for _, tertiary := range inputs {
-				if primary+secondary+tertiary == 2020 {
-					fmt.Println(primary * secondary * tertiary)
-				}
+			if primary+secondary == 2020 {
+				fmt.Println(primary * secondary)
+				os.Exit(0)
 			}
 		}
 	}
