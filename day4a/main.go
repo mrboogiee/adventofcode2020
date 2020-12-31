@@ -35,39 +35,26 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-	passports := createPassports(inputs)
-	validPassportCount := countValidPassports(passports)
-	fmt.Printf("Valid passports: %d\n", validPassportCount)
-}
-
-func countValidPassports(passports []map[string]string) int {
+	passport := make(map[string]string)
+	passports := make([]map[string]string, 0)
+	for i, line := range inputs {
+		if line != "" {
+			fields := strings.Split(line, " ")
+			for _, field := range fields {
+				keyvalue := strings.Split(field, ":")
+				passport[keyvalue[0]] = keyvalue[1]
+			}
+		}
+		if line == "" || i+1 == len(inputs) {
+			passports = append(passports, passport)
+			passport = map[string]string{}
+		}
+	}
 	var count int
-	for _, pp := range passports {
-		if pp["byr"] != "" && pp["iyr"] != "" && pp["eyr"] != "" && pp["hgt"] != "" && pp["hcl"] != "" && pp["ecl"] != "" && pp["pid"] != "" {
+	for _,passport := range passports{
+		if passport["byr"]!="" && passport["iyr"] !="" && passport["eyr"] != "" && passport["hgt"]!="" && passport["hcl"]!=""&&passport["ecl"]!=""&&passport["pid"]!=""{
 			count++
 		}
 	}
-	return count
-}
-
-func extractValuePairs(line string, passport map[string]string) map[string]string {
-	pairs := strings.Split(line, " ")
-	for _, pair := range pairs {
-		passport[pair[0:3]] = pair[4:]
-	}
-	return passport
-}
-
-func createPassports(inputs []string) []map[string]string {
-	passportlist := make([]map[string]string, 0)
-	passport := make(map[string]string)
-	for i, line := range inputs {
-		if line != "" {
-			passport = extractValuePairs(line, passport)
-		}
-		if i+1 == len(inputs) || line == "" {
-			passportlist = append(passportlist, passport)
-		}
-	}
-	return passportlist
+	fmt.Println(count)
 }
