@@ -23,7 +23,6 @@ func main() {
 				allYesCount++
 			}
 		}
-		fmt.Println(allYesCount)
 		total += allYesCount
 	}
 	fmt.Printf("Total %d", total)
