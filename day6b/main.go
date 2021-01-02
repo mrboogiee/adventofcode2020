@@ -18,9 +18,7 @@ func main() {
 	var total int
 	for _, group := range groups {
 		allYesCount := 0
-		fmt.Println(group)
 		for _, count := range group.answers {
-			fmt.Println(count, group.members)
 			if count == group.members {
 				allYesCount++
 			}
